@@ -1,0 +1,20 @@
+CREATE TABLE Store (id INTEGER PRIMARY KEY, Item text, Price Integer, Color Text, Quatity Integer);
+
+INSERT INTO Store VALUES
+(1, "Bike", 100, "Blue", 2), 
+(2, "Car", 25000, "Sivler", 3),
+(3, "Scooter", 30, "Black", 15),
+(4, "Skatebaord", 20, "Multi-Colored", 10),
+(5, "Helecopter", 150000, "Grey", 1),
+(6, "Airplane", 150000, "Blue", 1),
+(7, "Motorbike", 20000, "Red", 3),
+(8, "Bike", 150, "Yellow", 2),
+(9, "Mountain Bike", 250, "Green", 5),
+(10, "Road Bike", 300, "Silver", 2),
+(11, "Segway", 1500, "Black", 16),
+(12, "Speed Bike", 475, "Green", 7), 
+(13, "Long Board", 185, "Multi-Colored", 9),
+(14, "Roller Blades", 45, "Black", 4),
+(15, "Roller Skates", 35, "Black", 3);
+
+Select item, price FROM store ORDER BY Price;
