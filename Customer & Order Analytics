@@ -1,0 +1,66 @@
+--In this SQL I am analyzing a dataset with multiple tables to quantify statics about the customers and the orders.
+
+-- Analyzed data set to calculate how many order palced in January.
+
+SELECT COUNT(orderID)
+FROM BIT_DB.JanSales
+WHERE length (orderID) = 6
+AND orderID <> 'Order ID'
+; 
+
+--Analyzed data set to show how many purchases in january were iPhones.
+
+SELECT COUNT(orderID)
+FROM BIT_DB.JanSales
+WHERE Product = "iPhone" 
+AND length (orderID) = 6
+AND orderID <> 'Order ID'
+; 
+
+--Analyzed data set to show all customer account numbers for purchases in the month of Febuary.
+
+SELECT distinct acctnum
+FROM BIT_DB.customers cust
+INNER JOIN BIT_DB.FebSales Feb
+ON cust.order_id=FEB.orderid
+WHERE length(orderid) = 6
+AND orderid <> 'Order ID';
+
+--Analyzed data set to show the cheapest prodcut sold and its price in the month of January. 
+
+SELECT DISTINCT Product, MIN(price)
+FROM BIT_DB.JanSales
+WHERE length(orderid) = 6
+AND orderid <> 'Order ID'
+;
+
+--Analyzed data set to show total revenue for each prodcut in the month of January.
+
+SELECT DISTINCT Product, ROUND((SUM(Quantity)*price),2) AS "Total Revenue"
+FROM BIT_DB.JanSales
+WHERE length(orderid) = 6
+AND orderid <> 'Order ID'
+GROUP BY Product
+;
+
+--Analyzed data set to show what and how many prodcuts where sold to a specific customer in the month of Febuary.
+
+SELECT DISTINCT Product, Quantity, ROUND((SUM(Quantity)*price),2) AS "Total Revenue"
+FROM BIT_DB.FebSales
+WHERE location = "548 Lincoln St, Seattle, WA 98101"
+AND length(orderid) = 6
+AND orderid <> 'Order ID'
+GROUP BY Product
+ORDER BY "Total Revenue"
+;
+
+--Analyzed data set to show the number of customer purchasing more then two prodcuts and the average purcashe amount for the month of Febuary.
+
+SELECT COUNT(DISTINCT cust.acctnum) AS "Number of Customers", ROUND(AVG(FS.quantity*FS.price),2) AS "Average Purchase Price"
+FROM BIT_DB.customers AS "cust"
+INNER JOIN BIT_DB.FebSales AS "FS"
+ON cust.order_id = FS.orderID
+WHERE FS.quantity > 2
+AND length(orderid) = 6
+AND orderid <> 'Order ID'
+;
