@@ -1,0 +1,193 @@
+--Analyzed data set to show the Top 10 songs purchased in the over all in all countries.
+
+SELECT Distinct T.Name AS "Song Title", COUNT(II.TrackId) AS "Total Sold"   
+FROM chinook.invoice_items II
+INNER JOIN invoices I
+ON I.InvoiceId = II.InvoiceId
+INNER JOIN chinook.tracks T
+ON II.TrackId = T.TrackId
+GROUP BY "Song Title"
+ORDER BY "Total Sold" DESC
+LIMIT 10
+;
+
+--Analyzed data set to show all invoiced revenue for 2012 and sorted per country.
+
+SELECT BillingCountry AS "Country", ROUND(SUM(Total),2) AS "Billed Revenue (2012)"
+FROM chinook.invoices
+WHERE InvoiceDate LIKE '2012%'
+GROUP BY BillingCountry
+;
+
+--Analyed data set to find the 5 most popular songs purchased in the USA. Along with the artist's name and how many sold. 
+
+SELECT T.Name AS "Song Title", AR.Name AS "Artist Name", COUNT(T.Name) AS "Total Purchases in the U.S."
+FROM chinook.tracks T
+LEFT JOIN chinook.invoice_items II
+ON T.TrackId = II.TrackId
+LEFT JOIN chinook.invoices I
+ON II.InvoiceId = I.InvoiceId
+LEFT JOIN chinook.albums AL
+ON T.AlbumId = AL.AlbumId
+LEFT JOIN chinook.artists AR
+ON AL.ArtistId = AR.ArtistId
+Where I.BillingCountry = "USA"
+AND T.Name <> "[Untitled]"
+AND length (T.Name) > 3
+GROUP BY T.Name
+ORDER BY "Total Purchases in the U.S." DESC
+LIMIT 5    
+;
+
+--Analyzes the data set to bring up all customer outisde the U.S, listing their Country, Customer ID and full name. 
+
+SELECT CustomerId AS "Customer ID", FirstName AS "First Name", LastName AS "Last Name", Country
+FROM chinook.customers
+WHERE Country != "USA"
+ORDER BY Country
+;
+
+--Analyzes the data set similar to the above but looks for only the customers in Brazil, listing their Country, Customer ID and full name. 
+
+SELECT CustomerId AS "Customer ID", FirstName AS "First Name", LastName AS "Last Name", Country
+FROM chinook.customers
+WHERE Country = "Brazil"
+ORDER BY CustomerId
+;
+
+--Analyzes the data set to pull up annd the invoices for the customers in Brazil, listing the invoice ID, invoice date, first and last name and country still for reference.   
+
+SELECT I.InvoiceId AS "Invoice ID" , I.InvoiceDate AS "Invoice Date", C.FirstName AS "First Name", C.LastName AS "Last Name", I.BillingCountry AS "Country"
+FROM chinook.customers C
+LEFT JOIN chinook.invoices I
+ON C.CustomerId = I.CustomerId
+WHERE Country = "Brazil"
+ORDER BY I.InvoiceID
+;
+
+-- Analyzed the data set to show all the employees who are assigned as Sales Agents. Listing their first and last names, toitle and employee ID. 
+
+SELECT FirstName AS "First Name", LastName AS "Last Name", Title AS "Job Title", EmployeeId AS "Employee ID"
+FROM chinook.employees
+WHERE Title = "Sales Support Agent"
+;
+
+-- Analyzed the data set to show all the countries where there were sales in 2009.
+
+SELECT Distinct BillingCountry
+FROM chinook.Invoices
+WHERE InvoiceDate LIKE '2009%'
+;
+
+--Analyzed the data set to show all invoices along with teh Sales Support Rep responsaible for the sale. Listing the invoice ID, eployee's ID and their full name. 
+
+SELECT I.InvoiceId AS "Invoice ID", E.EmployeeId AS "Employee ID", E.FirstName AS "Employee First Name", E.LastName AS "Employee Last Name"  
+FROM chinook.invoices I
+INNER JOIN chinook.customers C
+ON I.CustomerId = C.CustomerId
+INNER JOIN chinook.employees E
+ON C.SupportRepId  = E.EmployeeId
+GROUP BY I.InvoiceId
+ORDER BY I.InvoiceId
+;
+
+-- Analyzed data set to show invoices with the sales total, customer and sales person's name along with the county of purchase.  
+
+SELECT I.InvoiceId AS "Invoice ID", I.Total AS "Invoice Total", I.BillingCountry AS "Country", C.FirstName As "Customer First Name", C.LastName AS "Customer Last Name", E.FirstName AS "Employee First Name", E.LastName AS "Employee Last Name"  
+FROM chinook.invoices I
+INNER JOIN chinook.customers C
+ON I.CustomerId = C.CustomerId
+INNER JOIN chinook.employees E
+ON C.SupportRepId  = E.EmployeeId
+GROUP BY I.InvoiceId
+ORDER BY I.InvoiceId
+;
+
+-- Analyzed data set to show the number of invocies and the total revenue for 2009. 
+
+SELECT COUNT(InvoiceId) AS "Number of 2009 Invoices", ROUND(SUM(Total),2) AS "Total Revenue"
+FROM chinook.invoices
+WHERE InvoiceDate LIKE '2009%'
+ORDER BY InvoiceId
+;
+
+-- Analyzed the data set to include all in the invoices, listing the invoice ID, Song ID and the song title. 
+
+SELECT II.InvoiceId AS "Invoice ID", II.TrackId AS "Song ID", T.Name AS "Song Title"
+FROM chinook.invoice_items II
+INNER JOIN chinook.tracks T
+ON II.TrackID = T.TrackID
+ORDER BY II.InvoiceId
+;
+
+-- Analyzed the data set to include all in the invoices, listing the invoice ID, Song ID, song title and the artist's name.
+
+SELECT II.InvoiceId AS "Invoice ID", II.TrackId AS "Song ID", T.Name AS "Song Title", AR.Name AS "Artist"
+FROM chinook.invoice_items II
+INNER JOIN chinook.tracks T
+ON II.TrackID = T.TrackID
+INNER JOIN chinook.albums A
+ON T.AlbumId = A.AlbumId
+INNER JOIN chinook.artists AR
+ON A.ArtistId = AR.ArtistId
+ORDER BY II.InvoiceId
+;
+
+-- Analyzed data set to include all song offered and listing the song titl, album, artist's name, media type and genre.  
+
+SELECT T.Name AS "Song Title", A.Title AS "Album", AR.Name AS "Artist", MT.Name AS "Media Type", G.Name AS "Genre"  
+FROM chinook.tracks T
+INNER JOIN chinook.albums A
+ON T.AlbumID = A.AlbumID
+INNER JOIN chinook.artists AR
+ON A.ArtistId = AR.ArtistId
+INNER JOIN chinook.media_types MT
+ON T.MediaTypeId = MT.MediaTypeId
+INNER JOIN chinook.genres G
+ON T.GenreId = G.GenreId
+WHERE T.Name <> "[Untitled]"
+AND length (T.Name) > 3
+Order BY A.Title
+;
+
+--Analyized the data set to show the career toals for the all the sales represetatives in the company. Listing their names, eployee ID and their total sales.
+
+SELECT E.EmployeeId AS "Employee ID", E.FirstName AS "Employee First Name", E.LastName AS "Employee Last Name", ROUND(SUM(II.UnitPrice * II.Quantity),2) AS "Career Total Sales"
+FROM chinook.invoice_items II
+INNER JOIN chinook.invoices I
+ON II.InvoiceId = I.InvoiceId
+INNER JOIN chinook.customers C
+ON I.CustomerId = C.CustomerId
+INNER JOIN chinook.employees E
+ON C.SupportRepId = E.EmployeeId
+GROUP BY E.EmployeeId
+ORDER BY "Career Total Sales" DESC
+;
+
+-- Analyzed the data set to find the top sales reapresetative for the 2009 year. Listing their employee ID, full anme and total sales for that year.
+
+SELECT E.EmployeeId AS "Employee ID", E.FirstName AS "Employee First Name", E.LastName AS "Employee Last Name", ROUND(SUM(II.UnitPrice * II.Quantity),2) AS "2009 Total Sales"
+FROM chinook.invoice_items II
+INNER JOIN chinook.invoices I
+ON II.InvoiceId = I.InvoiceId
+INNER JOIN chinook.customers C
+ON I.CustomerId = C.CustomerId
+INNER JOIN chinook.employees E
+ON C.SupportRepId = E.EmployeeId
+WHERE I.InvoiceDate LIKE '2009%'
+GROUP BY E.EmployeeId
+ORDER BY "2009 Total Sales" DESC
+LIMIT 1;
+
+-- Analyzed data set to sort all the purchased song by genre to find the top 5. 
+
+SELECT G.Name AS "Genre", COUNT(II.TrackId) AS "Number of Purchases"
+FROM chinook.invoice_items II
+INNER JOIN chinook.tracks T
+ON II.TrackId = T.TrackId
+INNER JOIN chinook.genres G
+ON T.GenreId = G.GenreId
+GROUP BY G.Name
+ORDER BY COUNT(II.TrackId) DESC
+LIMIT 5
+;
